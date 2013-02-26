@@ -1,0 +1,24 @@
+class Gear
+  def constructor:chainring cog:cog
+    @chainring = chainring
+    @cog       = cog
+
+  def gear_inches:diameter
+    (this ratio) / diameter
+
+  def ratio
+    @chainring / (@cog to_f)
+
+
+class Wheel
+  def constructor:rim tire:tire chainring:chainring cog:cog
+    @rim  = rim
+    @tire = tire
+    @gear = (Gear new:chainring cog:cog)
+
+  def diameter
+    @rim + (@tire size)
+
+  def gear_inches
+    diameter = (this diameter)
+    (@gear gear_inches:diameter)

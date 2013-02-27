@@ -4,7 +4,7 @@ class Gear
     @cog       = cog
 
   def gear_inches:diameter
-    (this ratio) / diameter
+    (this ratio:) / diameter
 
   def ratio
     @chainring / (@cog to_f)
@@ -20,5 +20,5 @@ class Wheel
     @rim + (@tire size)
 
   def gear_inches
-    diameter = (this diameter)
+    diameter = (this diameter:)
     (@gear gear_inches:diameter)

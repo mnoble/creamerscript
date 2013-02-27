@@ -1,4 +1,4 @@
-require "creamerscript/substitutor"
+require "spec_helper"
 
 describe Creamerscript::Substitutor do
   let!(:substitutor) { Creamerscript::Substitutor.new }

@@ -25,12 +25,12 @@ module Creamerscript
 
     def transform_invocation(source)
       invocation = invocations[id(source, :INVOCATION)]
-      MethodInvocation.new(invocation).to_coffee
+      Transformers::MethodInvocation.new(invocation).to_coffee
     end
 
     def transform_property(source)
       property = properties[id(source, :PROPERTY)]
-      PropertyInvocation.new(property).to_coffee
+      Transformers::PropertyInvocation.new(property).to_coffee
     end
 
     def transform_array(source)
@@ -44,6 +44,8 @@ module Creamerscript
     def transform_object(source)
       objects[id(source, :OBJECT)]
     end
+
+    private
 
     def id(source, type)
       source.scan(/_____CREAMER_#{type}_(\d+)_____/)[0][0].to_i

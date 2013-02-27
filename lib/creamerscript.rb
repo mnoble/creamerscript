@@ -1,4 +1,5 @@
 require "creamerscript/substitutor"
 require "creamerscript/compiler"
-require "creamerscript/method_invocation"
-require "creamerscript/property_invocation"
+require "creamerscript/transformers/method_definition"
+require "creamerscript/transformers/method_invocation"
+require "creamerscript/transformers/property_invocation"

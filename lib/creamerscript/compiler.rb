@@ -1,6 +1,6 @@
 module Creamerscript
   class Compiler
-    SUBSTITUTION = /_____CREAMER_([A-Z]+)_(\d+)_____/
+    SUBSTITUTION = /_____CREAMER_([A-Z_]+)_(\d+)_____/
 
     attr_accessor :substitutor
 
@@ -9,15 +9,14 @@ module Creamerscript
     end
 
     def compile(source)
+      source = source.dup
       substitutor.sub!(source)
       transform(source)
     end
 
     def transform(source)
-      source.gsub(SUBSTITUTION) do |sub|
-        type   = $1.downcase
-        id     = $2.to_i
-        result = send(:"transform_#{type}", sub)
+      source.gsub!(SUBSTITUTION) do |sub|
+        result = send(:"transform_#{$1.downcase}", sub)
         result = transform(result) if result.match(SUBSTITUTION)
         result
       end
@@ -31,6 +30,10 @@ module Creamerscript
     def transform_property(source)
       property = properties[id(source, :PROPERTY)]
       Transformers::PropertyInvocation.new(property).to_coffee
+    end
+
+    def transform_js_argument_list(source)
+      js_argument_lists[id(source, :JS_ARGUMENT_LIST)]
     end
 
     def transform_array(source)
@@ -55,6 +58,14 @@ module Creamerscript
       substitutor.invocations
     end
 
+    def properties
+      substitutor.properties
+    end
+
+    def js_argument_lists
+      substitutor.js_argument_lists
+    end
+
     def arrays
       substitutor.arrays
     end
@@ -65,10 +76,6 @@ module Creamerscript
 
     def objects
       substitutor.objects
-    end
-
-    def properties
-      substitutor.properties
     end
   end
 end

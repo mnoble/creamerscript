@@ -22,9 +22,9 @@ describe Creamerscript::Compiler do
     compiler.transform_array("_____CREAMER_ARRAY_0_____").should == "[1, 2, 3]"
   end
 
-  it "transforms an array substitution" do
-    compiler.stub(:arrays).and_return({ 0 => "[1, 2, 3]" })
-    compiler.transform_array("_____CREAMER_ARRAY_0_____").should == "[1, 2, 3]"
+  it "transforms a JavaScript argument list substitution" do
+    compiler.stub(:js_argument_lists).and_return({ 0 => "arg1, arg2, arg3" })
+    compiler.transform_js_argument_list("_____CREAMER_JS_ARGUMENT_LIST_0_____").should == "arg1, arg2, arg3"
   end
 
   it "transforms a string substitution" do
@@ -42,12 +42,12 @@ describe Creamerscript::Compiler do
       def foo
         (this bar:baz beep:{a:1})
         (this alert:"MOG")
-        return true
+        return (_ all:[true], (this all_iter), this)
 
       def zap
         a = (1 + 1)
         (console log:a)
-        (connection send_async_request:(Request create:)
+        (connection send_async_request:(Request new:)
                                  queue:"main_queue"
                     completion_handler:(this complete))
     }
@@ -58,12 +58,12 @@ describe Creamerscript::Compiler do
       def foo
         this.bar_beep(baz, {a:1})
         this.alert("MOG")
-        return true
+        return _.all([true], this.all_iter, this)
 
       def zap
         a = (1 + 1)
         console.log(a)
-        connection.send_async_request_queue_completion_handler(Request.create(), "main_queue", this.complete)
+        connection.send_async_request_queue_completion_handler(new Request(), "main_queue", this.complete)
     }
   end
 end

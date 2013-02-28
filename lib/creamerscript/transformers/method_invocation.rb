@@ -8,6 +8,14 @@ module Creamerscript
       end
 
       def to_coffee
+        method_name == "new" ? initializer : normal_method_call
+      end
+
+      def initializer
+        "new #{subject}(#{arguments})"
+      end
+
+      def normal_method_call
         "#{subject}.#{method_name}(#{arguments})"
       end
 
@@ -49,7 +57,7 @@ module Creamerscript
       end
 
       def parameter_values
-        argument_list.flatten.each_with_index.map { |arg, index| arg if index.odd? }.compact
+        argument_list.flatten.each_with_index.map { |arg, index| arg.gsub(",", "") if index.odd? }.compact
       end
 
       def argument_list

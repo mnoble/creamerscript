@@ -77,7 +77,7 @@ describe Creamerscript::Substitutor do
     end
   end
 
-  describe "Invocations" do
+  describe "CreamerScript Invocations" do
     it "substitutes nested invocations depth-first" do
       substitutor.sub_invocations("(this foo:(bar baz:))").should == "(this foo:_____CREAMER_INVOCATION_0_____)"
     end
@@ -106,6 +106,12 @@ describe Creamerscript::Substitutor do
 
         def pow
           (this spark:(mark bark:_____CREAMER_INVOCATION_1_____)) }
+    end
+  end
+
+  describe "JavaScript Invocations" do
+    it "substitutes a normal comma seperated list of arguments" do
+      substitutor.sub_js_argument_list("(this foo:arg1, arg2, arg3)").should == "(this foo:_____CREAMER_JS_ARGUMENT_LIST_0_____)"
     end
   end
 

@@ -66,6 +66,11 @@ module Creamerscript
       Transformers::PropertyInvocation.new(property).to_coffee
     end
 
+    def transform_definition(source)
+      definition = definitions[id(source, :DEFINITION)]
+      Transformers::MethodDefinition.new(definition).to_coffee
+    end
+
     def transform_js_argument_list(source)
       js_argument_lists[id(source, :JS_ARGUMENT_LIST)]
     end
@@ -110,6 +115,10 @@ module Creamerscript
 
     def objects
       substitutor.objects
+    end
+
+    def definitions
+      substitutor.definitions
     end
   end
 end

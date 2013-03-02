@@ -88,24 +88,20 @@ describe Creamerscript::Substitutor do
 
     it "substitutes deeply nested, multi-line, invocations depth-first" do
       source = %{
-        def zap
-          (this foo:bar
-                baz:(beep boop:ping
-                          ding:(dong ditch:)))
+        (this foo:bar
+              baz:(beep boop:ping
+                        ding:(dong ditch:)))
 
-        def pow
-          (this spark:(mark bark:(tark lark:))) }
+        (this spark:(mark bark:(tark lark:))) }
 
       substitutor.sub_invocations(source)
 
       source.should == %{
-        def zap
-          (this foo:bar
-                baz:(beep boop:ping
-                          ding:_____CREAMER_INVOCATION_0_____))
+        (this foo:bar
+              baz:(beep boop:ping
+                        ding:_____CREAMER_INVOCATION_0_____))
 
-        def pow
-          (this spark:(mark bark:_____CREAMER_INVOCATION_1_____)) }
+        (this spark:(mark bark:_____CREAMER_INVOCATION_1_____)) }
     end
   end
 
@@ -121,8 +117,18 @@ describe Creamerscript::Substitutor do
     end
   end
 
+  describe "Method Definitions" do
+    it "substitutes method definitions" do
+      substitutor.sub_definitions("def foo:bar").should == "_____CREAMER_DEFINITION_0_____"
+    end
+  end
+
   it "stores the contents of all occurences of strings, arrays, objects and invocations" do
-    source = '(this map:[1, [2, (a get)], 3] and_print:"MAPPED AND JUNK" until:(beep boop:(bop mop:)) so_that:[1, 2] will_become:{a:1, b:2})'
+    source = %{
+      def foo:bar beep:boop
+        (this map:[1, [2, (a get)], 3] and_print:"MAPPED AND JUNK" until:(beep boop:(bop mop:)) so_that:[1, 2] will_become:{a:1, b:2})'
+    }
+
     substitutor.sub!(source)
 
     substitutor.strings[0].should == '"MAPPED AND JUNK"'
@@ -138,5 +144,7 @@ describe Creamerscript::Substitutor do
     substitutor.invocations[0].should == "(bop mop:)"
     substitutor.invocations[1].should == "(beep boop:_____CREAMER_INVOCATION_0_____)"
     substitutor.invocations[2].should == "(this map:_____CREAMER_ARRAY_2_____ and_print:_____CREAMER_STRING_0_____ until:_____CREAMER_INVOCATION_1_____ so_that:_____CREAMER_ARRAY_1_____ will_become:_____CREAMER_OBJECT_0_____)"
+
+    substitutor.definitions[0].should == "def foo:bar beep:boop"
   end
 end

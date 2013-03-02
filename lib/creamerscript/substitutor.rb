@@ -30,6 +30,7 @@ module Creamerscript
     PROPERTY         = /\(#{SYMBOL} #{SYMBOL}\)/
     INVOCATION       = /\(#{SYMBOL} #{SYMBOL}[^\(\)]+\)/m
     JS_ARGUMENT_LIST = /\(#{SYMBOL} #{SYMBOL}:(#{SYMBOL},\s*[#{SYMBOL},\s]*)\)/
+    DEFINITION       = /def #{SYMBOL}(?::#{SYMBOL})?(?:\s+#{SYMBOL}:#{SYMBOL})*/
 
     # @!attribute [rw] strings
     #   List of String literal values that were replaces with tokens
@@ -55,13 +56,19 @@ module Creamerscript
     #   List of JavaScript Argument List values that were replaces with tokens
     attr_accessor :js_argument_lists
 
+    # @!attribute [rw] definitions
+    #   List of Method Definition values that were replaces with tokens
+    attr_accessor :definitions
+
+
     def initialize
-      @strings           = {}
-      @arrays            = {}
-      @objects           = {}
-      @invocations       = {}
-      @properties        = {}
+      @strings = {}
+      @arrays = {}
+      @objects = {}
+      @invocations = {}
+      @properties = {}
       @js_argument_lists = {}
+      @definitions = {}
     end
 
     # Replaces all invocations, and other elements there within,
@@ -72,6 +79,7 @@ module Creamerscript
     #
     def sub!(source)
       sub_invocations(source) while source =~ INVOCATION
+      sub_definitions(source) while source =~ DEFINITION
     end
 
     # Finds all occurences of an invocation without any nested
@@ -153,6 +161,20 @@ module Creamerscript
       source.gsub!(JS_ARGUMENT_LIST) do |match|
         match.gsub($1, token(:JS_ARGUMENT_LIST, js_argument_lists).tap { js_argument_lists[js_argument_lists.size] = $1 })
       end
+    end
+
+    # Replace all method definitions.
+    #
+    # @example
+    #
+    #   def foo:bar beep:boop
+    #   # => _____CREAMER_DEFINITION_0_____
+    #
+    #   definitions
+    #   # => {0=>"def foo:bar beep:boop"}
+    #
+    def sub_definitions(source)
+      sub_type(source, :DEFINITION, definitions)
     end
 
     private

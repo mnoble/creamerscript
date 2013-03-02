@@ -7,6 +7,18 @@ module Creamerscript
         @source = source
       end
 
+      def to_coffee
+        arguments.empty? ? definition_without_arguments : definition_with_arguments
+      end
+
+      def definition_without_arguments
+        "#{method_name}: =>"
+      end
+
+      def definition_with_arguments
+        "#{method_name}: (#{arguments}) =>"
+      end
+
       # Signature Keys are combined with an underscore to generate
       # the final method name.
       #
@@ -34,11 +46,11 @@ module Creamerscript
       private
 
       def signature_keys
-        argument_list.map(&:first)
+        argument_list.flatten.each_with_index.map { |arg, index| arg if index.even? }.compact
       end
 
       def parameter_names
-        argument_list.map(&:last)
+        argument_list.flatten.each_with_index.map { |arg, index| arg.gsub(",", "") if index.odd? }.compact
       end
 
       def argument_list

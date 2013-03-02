@@ -37,9 +37,14 @@ describe Creamerscript::Compiler do
     compiler.transform_object("_____CREAMER_OBJECT_0_____").should == "{a:1, b:2}"
   end
 
+  it "transforms a method definition substitution" do
+    compiler.stub(:definitions).and_return({ 0 => "def foo:bar baz:zap" })
+    compiler.transform_definition("_____CREAMER_DEFINITION_0_____").should == "foo_baz: (bar, zap) =>"
+  end
+
   it "transforms all substitutions" do
     source = %{
-      def foo
+      def foo:bar baz:zap
         (this bar:baz beep:{a:1})
         (this alert:"MOG")
         return (_ all:[true], (this all_iter), this)
@@ -55,12 +60,12 @@ describe Creamerscript::Compiler do
     coffee = compiler.compile(source)
 
     coffee.should == %{
-      def foo
+      foo_baz: (bar, zap) =>
         this.bar_beep(baz, {a:1})
         this.alert("MOG")
         return _.all([true], this.all_iter, this)
 
-      def zap
+      zap: =>
         a = (1 + 1)
         console.log(a)
         connection.send_async_request_queue_completion_handler(new Request(), "main_queue", this.complete)

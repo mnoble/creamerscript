@@ -7,39 +7,6 @@ meant to be used for anything real.
 
 ## Overview
 
-In its current state, the only real feature CreamerScript has is 100%
-key-based methods, similar to Objective-C. This means the name of
-methods are actually a combination of all the parameter keys.
-
-This means every parameter in a function definition has a description
-(Signature Key) and a name (Parameter Name). Things get verbose, but I
-think giving descriptions for the intent of each parameter helps when
-reading though method invocations.
-
-Imagine you come across a method call like this in JavaScript:
-
-```javascript
-person.say("Hello", false, "10:00:00")
-```
-
-What does the `false` value represent? Why are we passing a time string? 
-Many people replace these types of random parameter lists and accept a
-Hash of options. This is definitely better, but can still lack the
-natural language aspect of using fixed position, keyed parameters.
-
-Using CreamerScript to define and subsequently call this method would
-end up looking like this:
-
-```
-(person say:"Hello" loudly:false at_time:"10:00:00")
-```
-
-So with that you don't need to go hunting down where `say` is defined
-and figure out what all the parameters mean. It reads well and conveys
-the intent of each parameter. I think it's an improvement.
-
-## Syntax Overview
-
 CreamerScript on the left, compiled CoffeeScript (and sometimes
 JavaScript) on the right.
 
@@ -61,7 +28,36 @@ JavaScript) on the right.
 |  # Nested invocations                           |                                                   |
 |  (person set_name:(other_guy name))             |  person.set_name(other_guy.name)                  |
 |                                                 |                                                   |
+|  # Method Definition                            |                                                   |
+|  def connect:url with_options:options           |  connect_with_options: (url, options) =>          |
+|                                                 |                                                   |
 +-------------------------------------------------+---------------------------------------------------+
+```
+
+## Method Definitions
+
+Method definitions use the `def` keyword like Python and Ruby. In
+addition it uses the signature syntax of languages like Smalltalk 
+and Obj-C.
+
+The values on the left-hand side of each colon (:) are the Signature
+Keys. These are descriptions of what that parameter is/does. The values
+on the right-hand side are the variables you'll use in your method
+(Parameter Names).
+
+```coffeescript
+def async_request:url queue:queue on_complete:handler
+  ($ ajax: url, {success: handler})
+```
+
+## Calling Methods
+
+Methods defined in CreamerScript are calling with a similar syntax to
+their definitions. If we use the `async_request:queue:on_complete`
+example from above, you'd call it like so:
+
+```coffeescript
+(this async_request:"example.com" queue:"main_queue" on_complete:null)
 ```
 
 ## Usage

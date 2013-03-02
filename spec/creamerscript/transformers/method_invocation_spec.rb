@@ -28,4 +28,8 @@ describe Creamerscript::Transformers::MethodInvocation do
   it "transforms constructor calls" do
     invocation("(Date new)").to_coffee.should == "new Date()"
   end
+
+  it "transforms constructor calls with multiple parameters" do
+    invocation("(Date new:stuff with:thing)").to_coffee.should == "new Date(stuff, thing)"
+  end
 end

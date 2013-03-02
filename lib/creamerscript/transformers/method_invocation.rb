@@ -8,7 +8,7 @@ module Creamerscript
       end
 
       def to_coffee
-        method_name == "new" ? initializer : normal_method_call
+        method_name =~ /^new/ ? initializer : normal_method_call
       end
 
       def initializer

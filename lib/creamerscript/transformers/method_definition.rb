@@ -8,7 +8,15 @@ module Creamerscript
       end
 
       def to_coffee
-        arguments.empty? ? definition_without_arguments : definition_with_arguments
+        if method_name =~ /^constructor/
+          constructor
+        else
+          arguments.empty? ? definition_without_arguments : definition_with_arguments
+        end
+      end
+
+      def constructor
+        "constructor: (#{arguments}) ->"
       end
 
       def definition_without_arguments

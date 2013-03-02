@@ -20,4 +20,8 @@ describe Creamerscript::Transformers::MethodDefinition do
   it "converts a method with no arguments to CoffeeScript" do
     definition("def zap").to_coffee.should == "zap: =>"
   end
+
+  it "converts a constructor to CoffeeScript" do
+    definition("def constructor:stuff with:things").to_coffee.should == "constructor: (stuff, things) ->"
+  end
 end

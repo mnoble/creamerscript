@@ -1,3 +1,4 @@
+require "creamerscript/cli"
 require "creamerscript/substitutor"
 require "creamerscript/compiler"
 require "creamerscript/transformers/method_definition"

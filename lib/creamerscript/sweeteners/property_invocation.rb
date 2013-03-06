@@ -1,10 +1,8 @@
 module Creamerscript
-  module Transformers
-    class PropertyInvocation
-      attr_accessor :source
-
-      def initialize(source)
-        @source = source
+  module Sweeteners
+    class PropertyInvocation < Base
+      def pattern
+        /\(#{SYMBOL} #{SYMBOL}\)/
       end
 
       def to_coffee

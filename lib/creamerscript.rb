@@ -1,5 +1,9 @@
-require "creamerscript/substitutor"
+module Creamerscript
+  class Error < RuntimeError; end
+  class NotImplementedError < Error; end
+end
+
+require "active_support/inflector"
 require "creamerscript/compiler"
-require "creamerscript/transformers/method_definition"
-require "creamerscript/transformers/method_invocation"
-require "creamerscript/transformers/property_invocation"
+require "creamerscript/sweeteners"
+

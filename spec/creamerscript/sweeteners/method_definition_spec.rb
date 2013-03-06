@@ -1,8 +1,20 @@
 require "spec_helper"
 
-describe Creamerscript::Transformers::MethodDefinition do
+describe Creamerscript::Sweeteners::MethodDefinition do
+  let!(:sweetener) { described_class.new }
+
   def definition(source)
-    Creamerscript::Transformers::MethodDefinition.new(source)
+    sweetener.stub(:substitutions).and_return({ 0 => source })
+    sweetener.call(0)
+    sweetener
+  end
+
+  def substitution(source)
+    source.tap { sweetener.substitute(source) }
+  end
+
+  it "substitutes method definitions" do
+    substitution("def foo:bar").should == "_____CREAMER_METHOD_DEFINITION_0_____"
   end
 
   it "parses out the method name" do

@@ -1,10 +1,8 @@
 module Creamerscript
-  module Transformers
-    class MethodInvocation
-      attr_accessor :source
-
-      def initialize(source)
-        @source = source
+  module Sweeteners
+    class MethodInvocation < Base
+      def pattern
+        /\(#{SYMBOL} #{SYMBOL}[^\(\)]+\)/m
       end
 
       def to_coffee
@@ -19,33 +17,14 @@ module Creamerscript
         "#{subject}.#{method_name}(#{arguments})"
       end
 
-      # The object to call the method on.
-      #
       def subject
         body.split.first
       end
 
-      # The values before each ":" are combined to define
-      # which method to call. Method Definitions work in the
-      # fashion.
-      #
-      # Example
-      #
-      #   (this foo:bar baz:beep)
-      #   # => foo_baz
-      #
       def method_name
         signature_keys.join("_")
       end
 
-      # The values after each ":" become a normal list
-      # of Coffeescript Parameters.
-      #
-      # Example
-      #
-      #   (this foo:bar baz:beep)
-      #   # => "bar, beep"
-      #
       def arguments
         parameter_values.join(", ")
       end

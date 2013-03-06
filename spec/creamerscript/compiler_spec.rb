@@ -2,14 +2,6 @@ require "spec_helper"
 
 describe Creamerscript::Compiler do
   it "transforms all substitutions" do
-    Creamerscript::Sweeteners.register(Creamerscript::Sweeteners::String)
-    Creamerscript::Sweeteners.register(Creamerscript::Sweeteners::Array)
-    Creamerscript::Sweeteners.register(Creamerscript::Sweeteners::Object)
-    Creamerscript::Sweeteners.register(Creamerscript::Sweeteners::PropertyInvocation)
-    Creamerscript::Sweeteners.register(Creamerscript::Sweeteners::JSArgumentList)
-    Creamerscript::Sweeteners.register(Creamerscript::Sweeteners::MethodInvocation)
-    Creamerscript::Sweeteners.register(Creamerscript::Sweeteners::MethodDefinition)
-
     source = %{
       def foo:bar baz:zap
         (this bar:baz beep:{a:1})

@@ -10,19 +10,27 @@ require "creamerscript/sweeteners/string"
 module Creamerscript
   module Sweeteners
     def self.register(sweetener)
-      sweeteners << sweetener.new
+      sweetener.new.tap { |s| sweeteners[s.type] = s }
     end
 
     def self.each
-      sweeteners.each { |s| yield s }
+      sweeteners.each { |type, sweetener| yield sweetener }
     end
 
     def self.for(type)
-      sweeteners.find { |s| s.type == type }
+      sweeteners[type]
     end
 
     def self.sweeteners
-      @sweeteners ||= []
+      @sweeteners ||= {}
     end
+
+    register(Creamerscript::Sweeteners::String)
+    register(Creamerscript::Sweeteners::Object)
+    register(Creamerscript::Sweeteners::Array)
+    register(Creamerscript::Sweeteners::PropertyInvocation)
+    register(Creamerscript::Sweeteners::JSArgumentList)
+    register(Creamerscript::Sweeteners::MethodInvocation)
+    register(Creamerscript::Sweeteners::MethodDefinition)
   end
 end

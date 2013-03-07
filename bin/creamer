@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+require "creamerscript"
+puts Creamerscript::Compiler.new(File.read(ARGV[0])).compile

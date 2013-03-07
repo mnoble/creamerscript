@@ -1,37 +1,19 @@
 module Creamerscript
-  # Transforms substituted source into its final Coffeescript form.
+  # Compiles CreamerScript code to Coffeescript.
   #
-  # Finds all occurences of a CreamerScript token, described as
-  # +SUBSTITUTION+, and transforms its value into CoffeeScript. For
-  # strings, arrays, objects and JavaScript argument arrays this 
-  # nothing changes. They're just replaced directly. For CreamerScript 
-  # method/property invocations, this means transforming into 
-  # CoffeeScript/JavaScript syntax.
+  # The Compiler itself doesn't really do much. It's just a 
+  # structured way of parsing code and then transforming it
+  # into Coffeescript.
   #
-  # @example Method Invocations
+  # Sweeteners are the real workers of CreamerScript. Take a
+  # look at the the creamerscript-sweeteners project for more
+  # info.
   #
-  #   (console log:"Hello World")
-  #   # => console.log("Hello World")
+  # @example
   #
-  # @example Method Invocations with no arguments
-  #
-  #   (this say_hello:)
-  #   # => this.say_hello()
-  #
-  # @example Property Invocations
-  #
-  #   (person name)
-  #   # => person.name
-  #
-  # @example JavaScript-Defined Method Invocations
-  #
-  #   (node getFeature:feature, version)
-  #   # => node.getFeature(feature, version)
-  #
-  # @example Constructor Method Invocations
-  #
-  #   (Date new:"2013-03-01")
-  #   # => new Date("2013-03-01)
+  #   compiler = Creamerscript::Compiler.new "(person say:'Hello')"
+  #   compiler.compile
+  #   # => "person.say("hello")
   #
   class Compiler
     attr_accessor :source
@@ -42,11 +24,13 @@ module Creamerscript
 
     def compile
       substitute
-      transform(source)
+      source.tap { transform(source) }
     end
 
     def substitute
-      Sweeteners.each { |sweetener| sweetener.substitute(source) }
+      Sweeteners.each do |sweetener|
+        sweetener.substitute(source) while source =~ sweetener.pattern
+      end
     end
 
     def transform(source)

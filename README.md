@@ -1,79 +1,78 @@
 # CreamerScript
 
-CreamerScript is a little language that adds some sugar to CoffeeScript.
-
-It's currently just a playground for language parsing and design; not
-meant to be used for anything real.
+CreamerScript is a language framework on top of Coffeescript.
 
 ## Overview
 
-CreamerScript on the left, compiled CoffeeScript (and sometimes
-JavaScript) on the right.
+CreamerScript itself is really only a Compiler. That Compiler is really
+just a standard way of transforming code.
+[Sweeteners](https://github.com/mnoble/creamerscript-sweeteners) are what actually
+do the heavy lifting.
+
+## Process
+
+The compilation process is done in two stages. In the first stage, it
+runs through all registered Sweeteners and tells them to substitute any 
+code they will later want to transform with special tokens.
+
+Once all chunks of code are replaced with tokens, the Compiler will
+iterate through those tokens, find the Sweetener responsible for it and
+ask it to transform it to Coffeescript. It does this recursively until
+all tokens are replaced with the transformed code.
+
+## Rationale
+
+This is very much a poor man's parser approach. There is no AST and
+is therefor not a super robust system. You need to be able to match a
+chunk of code with a regexp in order to use it with CreamerScript.
+
+The substitution phase is done depth first, meaning the inner-most
+entities (of nested entities) are substituted first. Strings, Arrays and
+Objects are all substituted first. This gets rid of a lot of the
+headache of dealing with nested entities.
+
+## Example
 
 ```coffeescript
-+-------------------------------------------------+---------------------------------------------------+
-|                                                 |                                                   |
-|  # Calling a function with arguments            |                                                   |
-|  (dog bark:"Hello" loudly:true)                 |  dog.bark_loudly("Hello", true)                   |
-|                                                 |                                                   |
-|  # Calling a function with no arguments         |                                                   |
-|  (dog bark:)                                    |  dog.bark()                                       |
-|                                                 |                                                   |
-|  # Calling a non-Creamer defined function       |                                                   |
-|  (fn apply:null, arg1, arg2, arg3)              |  fn.apply(null, arg1, arg2, arg3)                 |
-|                                                 |                                                   |
-|  # Getting a property of an object              |                                                   |
-|  (person name)                                  |  person.name                                      |
-|                                                 |                                                   |
-|  # Nested invocations                           |                                                   |
-|  (person set_name:(other_guy name))             |  person.set_name(other_guy.name)                  |
-|                                                 |                                                   |
-|  # Method Definition                            |                                                   |
-|  def connect:url with_options:options           |  connect_with_options: (url, options) =>          |
-|                                                 |                                                   |
-+-------------------------------------------------+---------------------------------------------------+
-```
+class Gear
+  def constructor:chainring cog:cog
+    @chainring = chainring
+    @cog       = cog
 
-## Method Definitions
+  def gear_inches:diameter
+    (this ratio:) / diameter
 
-Method definitions use the `def` keyword like Python and Ruby. In
-addition it uses the signature syntax of languages like Smalltalk 
-and Obj-C.
+  def ratio
+    @chainring / (@cog to_f)
 
-The values on the left-hand side of each colon (:) are the Signature
-Keys. These are descriptions of what that parameter is/does. The values
-on the right-hand side are the variables you'll use in your method
-(Parameter Names).
 
-```coffeescript
-def async_request:url queue:queue on_complete:handler
-  ($ ajax: url, {success: handler})
-```
+class Wheel
+  def constructor:rim tire:tire chainring:chainring cog:cog
+    @rim  = rim
+    @tire = tire
+    @gear = (Gear new:chainring cog:cog)
 
-## Calling Methods
+  def diameter
+    @rim + (@tire size)
 
-Methods defined in CreamerScript are calling with a similar syntax to
-their definitions. If we use the `async_request:queue:on_complete`
-example from above, you'd call it like so:
-
-```coffeescript
-(this async_request:"example.com" queue:"main_queue" on_complete:null)
+  def gear_inches
+    diameter = (this diameter:)
+    (@gear gear_inches:diameter)
 ```
 
 ## Usage
 
-No binscripts yet, sorry. You can fire up irb and compile CreamerScript
-by doing:
+From the command line:
 
-```irb
-irb(main)001:0> compiler = Creamerscript::Compiler.new
-irb(main)002:0> compiler.compile "(@gear gear_inches:diameter)"
-=> "@gear.gear_inches(diameter)"
+```
+$ creamer path/to/file.creamer
 ```
 
+From Ruby:
 
-
-## TODO
-
-- Support global function calling: `($: "#wrap") # => $("#wrap")`
-
+```ruby
+require "creamerscript"
+compiler = Creamerscript::Compiler.new("(person say:word)")
+compiler.compile
+# => "person.say(word)"
+```

@@ -1,3 +1,3 @@
 require "creamerscript/compiler"
-require "creamerscript/sweeteners/default"
+require "creamerscript/sweeteners"
 

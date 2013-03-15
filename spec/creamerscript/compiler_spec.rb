@@ -6,14 +6,18 @@ describe Creamerscript::Compiler do
       def foo:bar baz:zap
         (this bar:baz beep:{a:1})
         (this alert:"MOG")
-        return (_ all:[true], (this all_iter), this)
+        return (_ all:[true], this.all_iter, this)
 
       def zap
         a = (1 + 1)
         (console log:a)
-        (connection send_async_request:(Request new:)
+        (connection send_async_request:(Request new)
                                  queue:"main_queue"
-                    completion_handler:(this complete))
+                    completion_handler:this.complete)
+
+      (things map) { thing | [1, thing] }
+
+      (people map) { p | p.name }
     }
 
     Creamerscript::Compiler.new(source).compile.should == %{
@@ -26,6 +30,10 @@ describe Creamerscript::Compiler do
         a = (1 + 1)
         console.log(a)
         connection.send_async_request_queue_completion_handler(new Request(), "main_queue", this.complete)
+
+      things.map((thing) -> [1, thing])
+
+      people.map((p) -> p.name)
     }
   end
 end

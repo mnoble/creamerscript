@@ -1,0 +1,120 @@
+grammar Creamerscript
+
+  rule block
+    statement+ <Block>
+  end
+
+  rule statement
+    space? expression space? <Statement>
+  end
+
+  # Literals
+
+  rule nil
+    "nil" <NilLiteral>
+  end
+
+  rule true
+    "true" <TrueLiteral>
+  end
+
+  rule false
+    "false" <FalseLiteral>
+  end
+
+  rule integer
+    ("+" / "-")? [0-9]+ <IntegerLiteral>
+  end
+
+  rule float
+    ("+" / "-")? [0-9]+ "." [0-9]+ <FloatLiteral>
+  end
+
+  rule string
+    '"' ([^"\\] / "\\" . )* '"' <StringLiteral>
+  end
+
+  rule identifier
+    [@\$]? [a-zA-Z] [a-zA-Z0-9_]* ("?" / "!")? <Identifier>
+  end
+
+  # Functions
+
+  rule function_call
+    "(" function_subject function_param_list ")" space? function_block? <Nodes::FunctionCall>
+  end
+
+  rule function_subject
+    space? identifier space <FunctionSubject>
+  end
+
+  rule function_param_list
+    function_param+ <FunctionParamList>
+  end
+
+  rule function_param
+    function_param_key space? ":"? function_param_value? <FunctionParams>
+  end
+
+  rule function_param_key
+    space? (function_call / identifier) space? <FunctionParamKey>
+  end
+
+  rule function_param_value
+    space? expression space? <FunctionParamValue>
+  end
+
+  # Properties
+
+  rule property_access
+    identifier "." identifier <PropertyAccess>
+  end
+
+  # Blocks
+
+  rule function_block
+    "{" space? block_variable_list?
+      block
+    space? "}" <FunctionBlock>
+  end
+
+  rule block_variable_list
+    (identifier space?)+ "|" <BlockVariableList>
+  end 
+
+  # Hash Literals
+
+  rule hash
+    "{" key_value_list? "}" <HashLiteral>
+  end
+
+  rule key_value_list
+    key_value+ <KeyValueList>
+  end
+
+  rule key_value
+    space? expression space? ":" space? expression space? ","? <KeyValue>
+  end
+
+  # Expressions
+
+  rule expression
+    space? primary <Expression>
+  end
+
+  rule primary
+    function_call / property_access / hash / nil / false / true / identifier / float / integer / string / "(" space? expression space? ")" <Expression>
+  end
+
+  # Whitespace
+
+  rule space
+    [\s]+
+  end
+
+  # End of File
+
+  rule end_of_file
+    !.
+  end
+end

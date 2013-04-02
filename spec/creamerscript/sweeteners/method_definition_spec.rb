@@ -10,10 +10,10 @@ describe Creamerscript::Sweeteners::MethodDefinition do
   end
 
   def substitution(source)
-    source.tap { sweetener.substitute(source) }
+    source.tap { sweetener.tokenize(source) }
   end
 
-  it "substitutes method definitions" do
+  it "tokenizes method definitions" do
     substitution("def foo:bar").should == "_____CREAMER_METHOD_DEFINITION_0_____"
   end
 
@@ -35,5 +35,9 @@ describe Creamerscript::Sweeteners::MethodDefinition do
 
   it "converts a constructor to CoffeeScript" do
     definition("def constructor:stuff with:things").to_coffee.should == "constructor: (stuff, things) ->"
+  end
+
+  it "specifies that the method can take a block" do
+    definition("def foo:bar &block").arguments.should == "bar, block"
   end
 end

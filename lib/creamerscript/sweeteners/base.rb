@@ -17,11 +17,18 @@ module Creamerscript
         source
       end
 
-      def substitute(source)
-        source.gsub!(pattern) { |match| tokenize(match) }
+      def tokenize(source)
+        source.gsub!(pattern) { |match| push(substitute(match)) }
       end
 
-      def tokenize(substitution)
+      def substitute(source)
+        while sweetener = Sweeteners.match(source, self)
+          sweetener.tokenize(source) 
+        end
+        source
+      end
+
+      def push(substitution)
         token.tap { substitutions[substitutions.size] = substitution }
       end
 

@@ -5,12 +5,12 @@ module Creamerscript
         /\)\s?{[^{}]+}/
       end
 
-      def substitute(source)
-        source.gsub!(pattern) { |match| ":#{tokenize(match)})" }
+      def token
+        " &block:#{super})"
       end
 
       def to_coffee
-        "(#{arguments.join(", ")}) ->#{body}"
+        "(#{arguments.join(", ")}) =>#{body}"
       end
 
       def arguments

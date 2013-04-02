@@ -10,30 +10,30 @@ describe Creamerscript::Sweeteners::MethodInvocation do
   end
 
   def substitution(source)
-    source.tap { sweetener.substitute(source) }
+    source.tap { sweetener.tokenize(source) }
   end
 
-  it "substitutes nested invocations depth-first" do
-    sweetener.substitute("(this foo:(bar baz:))")
-    sweetener.substitutions[0].should == "(bar baz:)"
+  it "tokenizes nested invocations depth-first" do
+    sweetener.tokenize("(this foo:(bar baz))")
+    sweetener.substitutions[0].should == "(bar baz)"
   end
 
-  it "substitutes deeply nested invocations depth-first" do
-    sweetener.substitute("(this foo:(bar baz:(beep boop:)))")
-    sweetener.substitutions[0].should == "(beep boop:)"
+  it "tokenizes deeply nested invocations depth-first" do
+    sweetener.tokenize("(this foo:(bar baz:(beep boop)))")
+    sweetener.substitutions[0].should == "(beep boop)"
   end
 
-  it "substitutes deeply nested, multi-line, invocations depth-first" do
+  it "tokenizes deeply nested, multi-line, invocations depth-first" do
     source = %{
       (this foo:bar
             baz:(beep boop:ping
-                      ding:(dong ditch:)))
+                      ding:(dong ditch)))
 
-      (this spark:(mark bark:(tark lark:))) }
+      (this spark:(mark bark:(tark lark))) }
 
-    sweetener.substitute(source)
-    sweetener.substitutions[0].should == "(dong ditch:)"
-    sweetener.substitutions[1].should == "(tark lark:)"
+    sweetener.tokenize(source)
+    sweetener.substitutions[0].should == "(dong ditch)"
+    sweetener.substitutions[1].should == "(tark lark)"
   end
 
   it "parses out the subject" do
@@ -57,7 +57,7 @@ describe Creamerscript::Sweeteners::MethodInvocation do
   end
 
   it "transforms constructor calls" do
-    invocation("(Date new:)").to_coffee.should == "new Date()"
+    invocation("(Date new)").to_coffee.should == "new Date()"
   end
 
   it "transforms constructor calls with multiple parameters" do

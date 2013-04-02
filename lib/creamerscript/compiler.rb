@@ -28,9 +28,7 @@ module Creamerscript
     end
 
     def substitute
-      Sweeteners.each do |sweetener|
-        sweetener.substitute(source) while source =~ sweetener.pattern
-      end
+      Sweeteners.each { |sweetener| sweetener.tokenize(source) while source =~ sweetener.pattern }
     end
 
     def transform(source)

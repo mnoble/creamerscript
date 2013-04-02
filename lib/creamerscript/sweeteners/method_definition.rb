@@ -30,7 +30,9 @@ module Creamerscript
       end
 
       def arguments
-        parameter_names.join(", ")
+        args = parameter_names.join(", ")
+        args << ", block" if @block
+        args
       end
 
       def type
@@ -52,7 +54,7 @@ module Creamerscript
       end
 
       def body
-        source.split("def ").last
+        source.split("def ").last.tap { |s| @block = true if s.gsub!(" &block", "") }
       end
     end
   end

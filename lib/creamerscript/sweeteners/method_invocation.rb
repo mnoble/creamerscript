@@ -6,7 +6,9 @@ module Creamerscript
       end
 
       def to_coffee
-        method_name =~ /^new/ ? initializer : normal_method_call
+        coffee = method_name =~ /^new/ ? initializer : normal_method_call
+        @block = nil
+        coffee
       end
 
       def initializer
@@ -26,7 +28,7 @@ module Creamerscript
       end
 
       def arguments
-        parameter_values.join(", ")
+        (parameter_values << @block).compact.join(", ")
       end
 
       private
@@ -48,7 +50,7 @@ module Creamerscript
       end
 
       def body
-        source[1..-2]
+        source[1..-2].gsub(/ &block:([^\s]+)/) { @block = $1; "" }
       end
     end
   end

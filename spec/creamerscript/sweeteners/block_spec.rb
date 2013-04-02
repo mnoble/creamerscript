@@ -10,14 +10,14 @@ describe Creamerscript::Sweeteners::Block do
   end
 
   def substitution(source)
-    source.tap { sweetener.substitute(source) }
+    source.tap { sweetener.tokenize(source) }
   end
 
-  it "substitutes a single-line block" do
+  it "tokenizes a single-line block" do
     substitution("(this map) { n | n + 1 }").should == "(this map:_____CREAMER_BLOCK_0_____)"
   end
 
-  it "substitutes a multi-line block" do
+  it "tokenizes a multi-line block" do
     substitution("(this map) { n |
       n + 1
     }").should == "(this map:_____CREAMER_BLOCK_0_____)"

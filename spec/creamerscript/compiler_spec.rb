@@ -1,40 +1,15 @@
 require "spec_helper"
+require "pathname"
 
 describe Creamerscript::Compiler do
-  it "transforms all substitutions" do
-    source = %{
-      def foo:bar baz:zap
-        (this bar:baz beep:{a:1})
-        (this alert:"MOG")
-        return (_ all:[true], this.all_iter, this)
+  it"compiles correctly" do
+    spec_root = Pathname.new(__FILE__).join("../../").expand_path
+    creamers  = Pathname.glob(spec_root.join("files/**/*.creamer"))
 
-      def zap
-        a = (1 + 1)
-        (console log:a)
-        (connection send_async_request:(Request new)
-                                 queue:"main_queue"
-                    completion_handler:this.complete)
-
-      (things map) { thing | [1, thing] }
-
-      (people map) { p | p.name }
-    }
-
-    Creamerscript::Compiler.new(source).compile.should == %{
-      foo_baz: (bar, zap) =>
-        this.bar_beep(baz, {a:1})
-        this.alert("MOG")
-        return _.all([true], this.all_iter, this)
-
-      zap: =>
-        a = (1 + 1)
-        console.log(a)
-        connection.send_async_request_queue_completion_handler(new Request(), "main_queue", this.complete)
-
-      things.map((thing) -> [1, thing])
-
-      people.map((p) -> p.name)
-    }
+    creamers.each do |c|
+      compiler = Creamerscript::Compiler.new(c.read)
+      compiler.compile.should == c.sub_ext(".coffee").read
+    end
   end
 end
 
